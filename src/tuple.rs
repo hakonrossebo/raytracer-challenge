@@ -1,4 +1,4 @@
-use std::ops::{Add, Sub};
+use std::ops::{Add, Div, Mul, Neg, Sub};
 
 #[derive(Debug)]
 pub struct Tuple(f64, f64, f64, f64);
@@ -15,7 +15,7 @@ impl Tuple {
 impl Add for Tuple {
     type Output = Tuple;
     fn add(self, other: Tuple) -> Tuple {
-        Tuple (
+        Tuple(
             self.0 + other.0,
             self.1 + other.1,
             self.2 + other.2,
@@ -36,13 +36,33 @@ impl Sub for Tuple {
     }
 }
 
+impl Neg for Tuple {
+    type Output = Tuple;
+    fn neg(self) -> Tuple {
+        Tuple(-self.0, -self.1, -self.2, -self.3)
+    }
+}
+
+impl Mul<f64> for Tuple {
+    type Output = Tuple;
+    fn mul(self, f: f64) -> Tuple {
+        Tuple(self.0 * f, self.1 * f, self.2 * f, self.3 * f)
+    }
+}
+impl Div<f64> for Tuple {
+    type Output = Tuple;
+    fn div(self, f: f64) -> Tuple {
+        Tuple(self.0 / f, self.1 / f, self.2 / f, self.3 / f)
+    }
+}
+
 impl PartialEq for Tuple {
     fn eq(&self, other: &Tuple) -> bool {
         let eps = 1e-6;
         (self.0 - other.0).abs() < eps
-        && (self.1 - other.1).abs() < eps
-        && (self.2 - other.2).abs() < eps
-        && (self.3 - other.3).abs() < eps
+            && (self.1 - other.1).abs() < eps
+            && (self.2 - other.2).abs() < eps
+            && (self.3 - other.3).abs() < eps
     }
 }
 
@@ -103,6 +123,57 @@ mod tests {
         let t2 = Tuple::point(5.0, 6.0, 7.0);
         let expected = Tuple::vector(-2.0, -4.0, -6.0);
         let actual = t1 - t2;
+        assert_eq!(expected, actual);
+    }
+    #[test]
+    fn subtract_vector_from_point() {
+        let p = Tuple::point(3.0, 2.0, 1.0);
+        let v = Tuple::vector(5.0, 6.0, 7.0);
+        let expected = Tuple::point(-2.0, -4.0, -6.0);
+        let actual = p - v;
+        assert_eq!(expected, actual);
+    }
+    #[test]
+    fn subtract_two_vectors() {
+        let v1 = Tuple::vector(3.0, 2.0, 1.0);
+        let v2 = Tuple::vector(5.0, 6.0, 7.0);
+        let expected = Tuple::vector(-2.0, -4.0, -6.0);
+        let actual = v1 - v2;
+        assert_eq!(expected, actual);
+    }
+    #[test]
+    fn subtract_vector_from_zero_vector() {
+        let v_zero = Tuple::vector(0.0, 0.0, 0.0);
+        let v = Tuple::vector(1.0, -2.0, 3.0);
+        let expected = Tuple::vector(-1.0, 2.0, -3.0);
+        let actual = v_zero - v;
+        assert_eq!(expected, actual);
+    }
+    #[test]
+    fn negating_a_tuple() {
+        let a = Tuple(1.0, -2.0, 3.0, -4.0);
+        let expected = Tuple(-1.0, 2.0, -3.0, 4.0);
+        assert_eq!(expected, -a);
+    }
+    #[test]
+    fn multiplying_by_scalar() {
+        let a = Tuple(1.0, -2.0, 3.0, -4.0);
+        let expected = Tuple(3.5, -7.0, 10.5, -14.0);
+        let actual = a * 3.5;
+        assert_eq!(expected, actual);
+    }
+    #[test]
+    fn multiplying_by_fraction() {
+        let a = Tuple(1.0, -2.0, 3.0, -4.0);
+        let expected = Tuple(0.5, -1.0, 1.5, -2.0);
+        let actual = a * 0.5;
+        assert_eq!(expected, actual);
+    }
+    #[test]
+    fn dividing_tuple_by_scalar() {
+        let a = Tuple(1.0, -2.0, 3.0, -4.0);
+        let expected = Tuple(0.5, -1.0, 1.5, -2.0);
+        let actual = a / 2.0;
         assert_eq!(expected, actual);
     }
 }
