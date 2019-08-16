@@ -1,6 +1,6 @@
 use std::ops::{Add, Div, Mul, Neg, Sub};
 
-#[derive(Debug)]
+#[derive(Debug, Copy, Clone)]
 pub struct Tuple(f64, f64, f64, f64);
 
 impl Tuple {
@@ -9,6 +9,23 @@ impl Tuple {
     }
     pub fn vector(x: f64, y: f64, z: f64) -> Tuple {
         Tuple(x, y, z, 0.0)
+    }
+    fn magnitude(self) -> f64 {
+        (self.0 * self.0 + self.1 * self.1 + self.2 * self.2 + self.3 * self.3).sqrt()
+    }
+    fn normalize(self) -> Tuple {
+        let m = self.magnitude();
+        Tuple(self.0 / m, self.1 / m, self.2 / m, self.3 / m)
+    }
+    fn dot(self, other: Tuple) -> f64 {
+        self.0 * other.0 + self.1 * other.1 + self.2 * other.2 + self.3 * other.3
+    }
+    fn cross(self, other: Tuple) -> Tuple {
+        Tuple::vector(
+            self.1 * other.2 - self.2 * other.1,
+            self.2 * other.0 - self.0 * other.2,
+            self.0 * other.1 - self.1 * other.0,
+        )
     }
 }
 
@@ -175,5 +192,53 @@ mod tests {
         let expected = Tuple(0.5, -1.0, 1.5, -2.0);
         let actual = a / 2.0;
         assert_eq!(expected, actual);
+    }
+    #[test]
+    fn magnitude_of_vector() {
+        assert_eq!(1.0, Tuple::vector(1.0, 0.0, 0.0).magnitude());
+        assert_eq!(1.0, Tuple::vector(0.0, 1.0, 0.0).magnitude());
+        assert_eq!(1.0, Tuple::vector(0.0, 0.0, 1.0).magnitude());
+        assert_eq!(14.0_f64.sqrt(), Tuple::vector(1.0, 2.0, 3.0).magnitude());
+        assert_eq!(14.0_f64.sqrt(), Tuple::vector(-1.0, -2.0, -3.0).magnitude());
+    }
+    #[test]
+    fn normalize_vector() {
+        assert_eq!(
+            Tuple::vector(1.0, 0.0, 0.0).normalize(),
+            Tuple::vector(1.0, 0.0, 0.0)
+        );
+        assert_eq!(
+            Tuple::vector(0.0, 1.0, 0.0).normalize(),
+            Tuple::vector(0.0, 1.0, 0.0)
+        );
+        assert_eq!(
+            Tuple::vector(0.0, 0.0, 1.0).normalize(),
+            Tuple::vector(0.0, 0.0, 1.0)
+        );
+        let v = Tuple::vector(1.0, 2.0, 3.0);
+        let nv = v.magnitude();
+        let v2 = Tuple::vector(1.0 / nv, 2.0 / nv, 3.0 / nv);
+        assert_eq!(v.normalize(), v2);
+        // assert_eq!(1.0, Tuple::vector(0.0, 1.0, 0.0).magnitude());
+        // assert_eq!(1.0, Tuple::vector(0.0, 0.0, 1.0).magnitude());
+        // assert_eq!(14.0_f64.sqrt(), Tuple::vector(1.0, 2.0, 3.0).magnitude());
+        // assert_eq!(14.0_f64.sqrt(), Tuple::vector(-1.0, -2.0, -3.0).magnitude());
+    }
+    #[test]
+    fn magnitude_of_normalized_vector() {
+        let v = Tuple::vector(1.0, 2.0, 3.0);
+        assert_eq!(v.normalize().magnitude(), 1.0);
+    }
+    #[test]
+    fn dot_product_of_two_tuples() {
+        let a = Tuple::vector(1.0, 2.0, 3.0);
+        let b = Tuple::vector(2.0, 3.0, 4.0);
+        assert_eq!(a.dot(b), 20.0);
+    }
+    #[test]
+    fn cross_product_of_two_tuples() {
+        let a = Tuple::vector(1.0, 2.0, 3.0);
+        let b = Tuple::vector(2.0, 3.0, 4.0);
+        assert_eq!(a.cross(b), Tuple::vector(-1.0, 2.0, -1.0));
     }
 }
