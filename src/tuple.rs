@@ -219,10 +219,6 @@ mod tests {
         let nv = v.magnitude();
         let v2 = Tuple::vector(1.0 / nv, 2.0 / nv, 3.0 / nv);
         assert_eq!(v.normalize(), v2);
-        // assert_eq!(1.0, Tuple::vector(0.0, 1.0, 0.0).magnitude());
-        // assert_eq!(1.0, Tuple::vector(0.0, 0.0, 1.0).magnitude());
-        // assert_eq!(14.0_f64.sqrt(), Tuple::vector(1.0, 2.0, 3.0).magnitude());
-        // assert_eq!(14.0_f64.sqrt(), Tuple::vector(-1.0, -2.0, -3.0).magnitude());
     }
     #[test]
     fn magnitude_of_normalized_vector() {
