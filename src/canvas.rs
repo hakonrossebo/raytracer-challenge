@@ -3,7 +3,7 @@
 // use raytracer_challenge::tuple::Tuple;
 use crate::tuple::Tuple;
 
-struct Canvas {
+pub struct Canvas {
     pub width: usize,
     pub height: usize,
     pub canvas: Vec<Tuple>,
