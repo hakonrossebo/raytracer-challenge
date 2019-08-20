@@ -1,7 +1,7 @@
 use std::ops::{Add, Div, Mul, Neg, Sub};
 
 #[derive(Debug, Copy, Clone)]
-pub struct Tuple(f64, f64, f64, f64);
+pub struct Tuple(pub f64, pub f64, pub f64, pub f64);
 
 impl Tuple {
     pub fn point(x: f64, y: f64, z: f64) -> Tuple {
@@ -13,14 +13,14 @@ impl Tuple {
     fn magnitude(self) -> f64 {
         (self.0 * self.0 + self.1 * self.1 + self.2 * self.2 + self.3 * self.3).sqrt()
     }
-    fn normalize(self) -> Tuple {
+    pub fn normalize(self) -> Tuple {
         let m = self.magnitude();
         Tuple(self.0 / m, self.1 / m, self.2 / m, self.3 / m)
     }
-    fn dot(self, other: Tuple) -> f64 {
+    pub fn dot(self, other: Tuple) -> f64 {
         self.0 * other.0 + self.1 * other.1 + self.2 * other.2 + self.3 * other.3
     }
-    fn cross(self, other: Tuple) -> Tuple {
+    pub fn cross(self, other: Tuple) -> Tuple {
         Tuple::vector(
             self.1 * other.2 - self.2 * other.1,
             self.2 * other.0 - self.0 * other.2,
