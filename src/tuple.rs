@@ -10,6 +10,9 @@ impl Tuple {
     pub fn vector(x: f64, y: f64, z: f64) -> Tuple {
         Tuple(x, y, z, 0.0)
     }
+    pub fn color(r: f64, g: f64, b: f64) -> Tuple {
+        Tuple(r, g, b, 0.0)
+    }
     fn magnitude(self) -> f64 {
         (self.0 * self.0 + self.1 * self.1 + self.2 * self.2 + self.3 * self.3).sqrt()
     }
@@ -70,6 +73,14 @@ impl Div<f64> for Tuple {
     type Output = Tuple;
     fn div(self, f: f64) -> Tuple {
         Tuple(self.0 / f, self.1 / f, self.2 / f, self.3 / f)
+    }
+}
+
+// Hadamard product for colors
+impl Mul<Tuple> for Tuple {
+    type Output = Tuple;
+    fn mul(self, c2: Tuple) -> Tuple {
+        Tuple(self.0 * c2.0, self.1 * c2.1, self.2 * c2.2, self.3 * c2.3)
     }
 }
 
@@ -236,5 +247,41 @@ mod tests {
         let a = Tuple::vector(1.0, 2.0, 3.0);
         let b = Tuple::vector(2.0, 3.0, 4.0);
         assert_eq!(a.cross(b), Tuple::vector(-1.0, 2.0, -1.0));
+    }
+
+    #[test]
+    fn colors_are_red_green_blue_tuples() {
+        let c = Tuple::color(-0.5, 0.4, 1.7);
+        let Tuple(r, g, b, _) = c;
+        assert_eq!(-0.5, r);
+        assert_eq!(0.4, g);
+        assert_eq!(1.7, b);
+    }
+    #[test]
+    fn adding_colors() {
+        let c1 = Tuple::color(0.9, 0.6, 0.75);
+        let c2 = Tuple::color(0.7, 0.1, 0.25);
+        let expected = Tuple::color(1.6, 0.7, 1.0);
+        assert_eq!(expected, c1 + c2)
+    }
+    #[test]
+    fn subtracting_colors() {
+        let c1 = Tuple::color(0.9, 0.6, 0.75);
+        let c2 = Tuple::color(0.7, 0.1, 0.25);
+        let expected = Tuple::color(0.2, 0.5, 0.5);
+        assert_eq!(expected, c1 - c2)
+    }
+    #[test]
+    fn multiplying_color_by_scalar() {
+        let c1 = Tuple::color(0.2, 0.3, 0.4);
+        let expected = Tuple::color(0.4, 0.6, 0.8);
+        assert_eq!(expected, c1 * 2.0)
+    }
+    #[test]
+    fn multiplying_colors() {
+        let c1 = Tuple::color(1.0, 0.2, 0.4);
+        let c2 = Tuple::color(0.9, 1.0, 0.1);
+        let expected = Tuple::color(0.9, 0.2, 0.04);
+        assert_eq!(expected, c1 * c2);
     }
 }
