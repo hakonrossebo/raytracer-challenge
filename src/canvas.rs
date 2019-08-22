@@ -17,7 +17,7 @@ impl Canvas {
         }
     }
     pub fn write_pixel(&mut self, x: usize, y: usize, color: Tuple) {
-        if x >= 0 && x <= self.width && y >= 0 && y <= self.height {
+        if x <= self.width && y <= self.height {
             let pos = self.width * y + x;
             self.canvas[pos] = color;
         }
@@ -151,6 +151,12 @@ mod tests {
             .join("\n");
         let expected = format!("255 204 153 255 204 153 255 204 153 255 204 153 255 204 153 255 204\n153 255 204 153 255 204 153 255 204 153 255 204 153\n255 204 153 255 204 153 255 204 153 255 204 153 255 204 153 255 204\n153 255 204 153 255 204 153 255 204 153 255 204 153\n");
         assert_eq!(expected, ppm);
+    }
+    #[test]
+    fn ppm_files_are_terminated_by_a_newline_character() {
+        let c = Canvas::new(5, 3);
+        let mut ppm = c.canvas_to_ppm();
+        assert_eq!(Some('\n'), ppm.pop());
     }
 
 }
