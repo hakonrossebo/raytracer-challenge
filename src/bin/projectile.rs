@@ -20,22 +20,26 @@ fn main() {
     wind: Tuple::vector(-0.01, 0.0, 0.0),
   };
   let mut canvas = Canvas::new(900, 550);
-  let red = Tuple::color(1.0, 0.0, 0.1);
+  let mut mag = 1.0 / p.velocity.magnitude();
+  let mut color = Tuple::color(1.0, 0.0, 1.0 - mag);
   println!("Starting projectile...");
-  while p.position.1 > 0.0 && iterations < 10 {
+  while p.position.1 > 0.0 && iterations < 1000 {
     iterations += 1;
-    p = tick(&e, &p);
+    mag = 1.0 / p.velocity.magnitude() * 4.0;
+    color = Tuple::color(1.0, 0.0 + mag, 1.0 - mag);
     println!(
       "Iterating...tick {}, x:{:.2}, y: {:.2}",
       iterations, p.position.0, p.position.1
     );
     let px = p.position.0.round() as usize;
-    let mut pytmp = p.position.1.round() as i64;
-    if pytmp <= 0 {
-      pytmp = 1
-    };
-    let py = canvas.height - pytmp as usize;
-    canvas.write_pixel(px, py, red);
+    // let mut pytmp = p.position.1.round() as i64;
+    // if pytmp <= 0 {
+    //   pytmp = 1
+    // };
+    // let py = canvas.height - pytmp as usize;
+    let py = canvas.height - (p.position.1.round() as usize);
+    canvas.write_pixel(px, py, color);
+    p = tick(&e, &p);
   }
   println!("Writing canvas to ppm.");
   let ppm = canvas.canvas_to_ppm();

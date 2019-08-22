@@ -13,7 +13,7 @@ impl Tuple {
     pub fn color(r: f64, g: f64, b: f64) -> Tuple {
         Tuple(r, g, b, 0.0)
     }
-    fn magnitude(self) -> f64 {
+    pub fn magnitude(self) -> f64 {
         (self.0 * self.0 + self.1 * self.1 + self.2 * self.2 + self.3 * self.3).sqrt()
     }
     pub fn normalize(self) -> Tuple {

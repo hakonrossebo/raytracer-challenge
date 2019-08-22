@@ -1,5 +1,5 @@
 use crate::tuple::Tuple;
-const COLORSCALE: i64 = 255;
+const COLORSCALE: i32 = 255;
 
 pub struct Canvas {
     pub width: usize,
@@ -18,8 +18,8 @@ impl Canvas {
     }
     pub fn write_pixel(&mut self, x: usize, y: usize, color: Tuple) {
         if x >= 0 && x <= self.width && y >= 0 && y <= self.height {
-          let pos = self.width * y + x;
-          self.canvas[pos] = color;
+            let pos = self.width * y + x;
+            self.canvas[pos] = color;
         }
     }
     pub fn pixel_at(&self, x: usize, y: usize) -> Tuple {
@@ -31,8 +31,8 @@ impl Canvas {
         let header = format!("P3\n{} {}\n{}\n", self.width, self.height, COLORSCALE);
 
         // helper function to convert rgb values
-        fn convert_and_clamp_color(color: f64) -> i64 {
-            let converted_color = (color * 256.0) as i64;
+        fn convert_and_clamp_color(color: f64) -> i32 {
+            let converted_color = (color * 256.0) as i32;
             if converted_color > COLORSCALE {
                 COLORSCALE
             } else if converted_color < 0 {
@@ -42,48 +42,39 @@ impl Canvas {
             }
         }
         // helper function to add colors to line according to ppm rules
-        fn push_color_to_line(line: &mut String, color: f64) -> &String {
-            let split = line.split("\n");
-            let lastline = split.collect::<Vec<&str>>().last().cloned();
-            let space_or_not = match lastline {
-                Some(l) => {
-                    if l.len() == 0 {
-                        ""
-                    } else {
-                        " "
-                    }
+        fn colors_to_ppm_string(v: &[i32]) -> String {
+            let mut pos = 0;
+            let mut s = String::new();
+            for i in v {
+                let n = format!("{}", i);
+                if pos + n.len() >= 68 {
+                    s.push('\n');
+                    pos = 0;
                 }
-                None => "",
-            };
-            let s = format!("{}{}", space_or_not, convert_and_clamp_color(color));
-            line.push_str(&s);
-            let split2 = line.split("\n");
-            let lastline2 = split2.collect::<Vec<&str>>().last().cloned();
-            let newline_at_70_characters = match lastline2 {
-                Some(l) => {
-                    if l.len() >= 67 {
-                        "\n"
-                    } else {
-                        ""
-                    }
+                if pos != 0 {
+                    s.push(' ');
+                    pos += 1;
                 }
-                None => "",
-            };
-            line.push_str(newline_at_70_characters);
-            line
+                s.push_str(&n);
+                pos += n.len();
+            }
+            s
         }
-
         // generating the ppm info from canvas
         let mut ppm = String::from(header);
         for y in 0..self.height {
-            let mut line = String::new();
+            // let mut line = String::new();
+            let mut linecolors: Vec<i32> = Vec::new();
             for x in 0..self.width {
                 let Tuple(r, g, b, _) = self.pixel_at(x, y);
-                push_color_to_line(&mut line, r);
-                push_color_to_line(&mut line, g);
-                push_color_to_line(&mut line, b);
+                linecolors.push(convert_and_clamp_color(r));
+                linecolors.push(convert_and_clamp_color(g));
+                linecolors.push(convert_and_clamp_color(b));
+                // push_color_to_line(&mut line, r);
+                // push_color_to_line(&mut line, g);
+                // push_color_to_line(&mut line, b);
             }
-            ppm.push_str(&line);
+            ppm.push_str(&colors_to_ppm_string(&linecolors));
             ppm.push('\n');
         }
         ppm.push('\n');
