@@ -20,8 +20,9 @@ fn main() {
     wind: Tuple::vector(-0.01, 0.0, 0.0),
   };
   let mut canvas = Canvas::new(900, 550);
-  let mut mag = 1.0 / p.velocity.magnitude();
-  let mut color = Tuple::color(1.0, 0.0, 1.0 - mag);
+  let mut mag;
+  let mut color;
+  //  = Tuple::color(1.0, 0.0, 1.0 - mag);
   println!("Starting projectile...");
   while p.position.1 > 0.0 && iterations < 1000 {
     iterations += 1;
