@@ -17,8 +17,10 @@ impl Canvas {
         }
     }
     pub fn write_pixel(&mut self, x: usize, y: usize, color: Tuple) {
-        let pos = self.width * y + x;
-        self.canvas[pos] = color;
+        if x >= 0 && x <= self.width && y >= 0 && y <= self.height {
+          let pos = self.width * y + x;
+          self.canvas[pos] = color;
+        }
     }
     pub fn pixel_at(&self, x: usize, y: usize) -> Tuple {
         let pos = self.width * y + x;
