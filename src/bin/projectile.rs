@@ -32,11 +32,6 @@ fn main() {
       iterations, p.position.0, p.position.1
     );
     let px = p.position.0.round() as usize;
-    // let mut pytmp = p.position.1.round() as i64;
-    // if pytmp <= 0 {
-    //   pytmp = 1
-    // };
-    // let py = canvas.height - pytmp as usize;
     let py = canvas.height - (p.position.1.round() as usize);
     canvas.write_pixel(px, py, color);
     p = tick(&e, &p);

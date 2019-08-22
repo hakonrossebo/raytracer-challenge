@@ -63,16 +63,12 @@ impl Canvas {
         // generating the ppm info from canvas
         let mut ppm = String::from(header);
         for y in 0..self.height {
-            // let mut line = String::new();
             let mut linecolors: Vec<i32> = Vec::new();
             for x in 0..self.width {
                 let Tuple(r, g, b, _) = self.pixel_at(x, y);
                 linecolors.push(convert_and_clamp_color(r));
                 linecolors.push(convert_and_clamp_color(g));
                 linecolors.push(convert_and_clamp_color(b));
-                // push_color_to_line(&mut line, r);
-                // push_color_to_line(&mut line, g);
-                // push_color_to_line(&mut line, b);
             }
             ppm.push_str(&colors_to_ppm_string(&linecolors));
             ppm.push('\n');
