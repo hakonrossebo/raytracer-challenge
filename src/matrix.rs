@@ -1,3 +1,4 @@
+use std::ops::{Add, Div, Mul, Neg, Sub};
 #[derive(Debug)]
 pub struct Matrix {
     pub dimensions: usize,
@@ -30,6 +31,15 @@ impl PartialEq for Matrix {
         };
         self.dimensions == other.dimensions && equal_elements(&self.elements, &other.elements)
     }
+}
+
+impl Mul<Matrix> for Matrix {
+    type Output = Matrix;
+    fn mul(self, other: Matrix) -> Matrix {
+        self
+
+    }
+
 }
 
 #[cfg(test)]
@@ -90,6 +100,21 @@ mod tests {
         let m2 = Matrix::from_vector(4, &v2);
 
         assert_ne!(m1, m2);
+    }
+    #[test]
+    fn multiplying_two_matrices() {
+        let a = vec![
+            1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 8.0, 7.0, 6.0, 5.0, 4.0, 3.0, 2.0,
+        ];
+        let b = vec![
+            -2.0, 1.0, 2.0, 3.0, 3.0, 2.0, 1.0, -1.0, 4.0, 3.0, 6.0, 5.0, 1.0, 2.0, 7.0, 8.0,
+        ];
+        let expected = vec![
+            20.0, 22.0, 50.0, 48.0, 44.0, 54.0, 114.0, 108.0, 40.0, 58.0, 110.0, 102.0, 16.0, 26.0,
+            46.0, 42.0,
+        ];
+
+        assert_eq!(expected, a * b);
     }
 
 }
