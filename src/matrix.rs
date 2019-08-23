@@ -36,10 +36,24 @@ impl PartialEq for Matrix {
 impl Mul<Matrix> for Matrix {
     type Output = Matrix;
     fn mul(self, other: Matrix) -> Matrix {
-        self
+        assert!(self.dimensions == other.dimensions);
+        let dot = |row: usize, col: usize| -> f64 {
+            (0..self.dimensions)
+                .map(|n| self.at(row, n) * other.at(n, col))
+                .sum()
+        };
 
+        let mut new_vec: Vec<f64> = Vec::new();
+        for row in 0..self.dimensions {
+            for col in 0..self.dimensions {
+                new_vec.push(dot(row, col));
+            }
+        }
+        Matrix {
+            dimensions: self.dimensions,
+            elements: new_vec,
+        }
     }
-
 }
 
 #[cfg(test)]
@@ -103,16 +117,19 @@ mod tests {
     }
     #[test]
     fn multiplying_two_matrices() {
-        let a = vec![
+        let avec = vec![
             1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 8.0, 7.0, 6.0, 5.0, 4.0, 3.0, 2.0,
         ];
-        let b = vec![
+        let a = Matrix::from_vector(4, &avec);
+        let bvec = vec![
             -2.0, 1.0, 2.0, 3.0, 3.0, 2.0, 1.0, -1.0, 4.0, 3.0, 6.0, 5.0, 1.0, 2.0, 7.0, 8.0,
         ];
-        let expected = vec![
+        let b = Matrix::from_vector(4, &bvec);
+        let evec = vec![
             20.0, 22.0, 50.0, 48.0, 44.0, 54.0, 114.0, 108.0, 40.0, 58.0, 110.0, 102.0, 16.0, 26.0,
             46.0, 42.0,
         ];
+        let expected = Matrix::from_vector(4, &evec);
 
         assert_eq!(expected, a * b);
     }
