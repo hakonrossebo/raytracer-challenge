@@ -1,4 +1,6 @@
+use crate::tuple::Tuple;
 use std::ops::{Add, Div, Mul, Neg, Sub};
+
 #[derive(Debug)]
 pub struct Matrix {
     pub dimensions: usize,
@@ -56,6 +58,24 @@ impl Mul<Matrix> for Matrix {
     }
 }
 
+impl Mul<Tuple> for Matrix {
+    type Output = Tuple;
+    fn mul(self, other: Tuple) -> Tuple {
+        assert!(self.dimensions == 4);
+        let dot = |row: usize| -> f64 {
+            self.at(row, 0) * other.0
+                + self.at(row, 1) * other.1
+                + self.at(row, 2) * other.2
+                + self.at(row, 3) * other.3
+        };
+
+        let mut new_vec: Vec<f64> = Vec::new();
+        for row in 0..self.dimensions {
+            new_vec.push(dot(row));
+        }
+        Tuple(new_vec[0], new_vec[1], new_vec[2], new_vec[3])
+    }
+}
 #[cfg(test)]
 
 mod tests {
@@ -133,5 +153,15 @@ mod tests {
 
         assert_eq!(expected, a * b);
     }
-
+    #[test]
+    fn multiplying_matrix_by_tuple() {
+        let avec = vec![
+            1.0, 2.0, 3.0, 4.0, 2.0, 4.0, 4.0, 2.0, 8.0, 6.0, 4.0, 1.0, 0.0, 0.0, 0.0, 1.0,
+        ];
+        let a = Matrix::from_vector(4, &avec);
+        let b = Tuple(1.0, 2.0, 3.0, 1.0);
+        let expected = Tuple(18.0, 24.0, 33.0, 1.0);
+        let actual = a * b;
+        assert_eq!(expected, actual);
+    }
 }
