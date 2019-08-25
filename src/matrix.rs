@@ -19,6 +19,23 @@ impl Matrix {
         let pos = self.dimensions * r + c;
         self.elements[pos]
     }
+
+    pub fn identity() -> Matrix {
+        let vector = [
+            1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0,
+        ];
+        Matrix::from_vector(4, &vector)
+    }
+
+    pub fn transpose(&self) -> Matrix {
+        let mut new_vec: Vec<f64> = Vec::with_capacity(self.dimensions * self.dimensions);
+        for r in 0..self.dimensions {
+            for c in 0..self.dimensions {
+                new_vec.push(self.at(c, r));
+            }
+        }
+        Matrix::from_vector(self.dimensions, &new_vec)
+    }
 }
 impl PartialEq for Matrix {
     fn eq(&self, other: &Matrix) -> bool {
@@ -163,5 +180,34 @@ mod tests {
         let expected = Tuple(18.0, 24.0, 33.0, 1.0);
         let actual = a * b;
         assert_eq!(expected, actual);
+    }
+    #[test]
+    fn multiplying_matrix_by_the_identity_matrix() {
+        let avec = vec![
+            0.0, 1.0, 2.0, 4.0, 1.0, 2.0, 4.0, 8.0, 2.0, 4.0, 8.0, 16.0, 4.0, 8.0, 16.0, 32.0,
+        ];
+        let a = Matrix::from_vector(4, &avec);
+        let expected = Matrix::from_vector(4, &avec);
+        let actual = a * Matrix::identity();
+        assert_eq!(expected, actual);
+    }
+    #[test]
+    fn transposing_a_matrix() {
+        let v1 = vec![
+            0.0, 9.0, 3.0, 0.0, 9.0, 8.0, 0.0, 8.0, 1.0, 8.0, 5.0, 3.0, 0.0, 0.0, 5.0, 8.0,
+        ];
+        let a = Matrix::from_vector(4, &v1);
+        let v2 = vec![
+            0.0, 9.0, 1.0, 0.0, 9.0, 8.0, 8.0, 0.0, 3.0, 0.0, 5.0, 5.0, 0.0, 8.0, 3.0, 8.0,
+        ];
+        let expected = Matrix::from_vector(4, &v2);
+        let actual = a.transpose();
+
+        assert_eq!(expected, actual);
+    }
+    #[test]
+    fn transposing_the_identity_matrix() {
+        let actual = Matrix::identity().transpose();
+        assert_eq!(Matrix::identity(), actual);
     }
 }
