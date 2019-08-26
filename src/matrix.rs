@@ -36,6 +36,24 @@ impl Matrix {
         }
         Matrix::from_vector(self.dimensions, &new_vec)
     }
+
+    pub fn determinant(&self) -> f64 {
+        assert!(self.dimensions == 2);
+        self.elements[0] * self.elements[3] - self.elements[1] * self.elements[2]
+    }
+
+    pub fn submatrix(&self, row: usize, col: usize) -> Matrix {
+        let mut new_vec: Vec<f64> =
+            Vec::with_capacity((self.dimensions - 1) * (self.dimensions - 1));
+        for r in 0..self.dimensions {
+            for c in 0..self.dimensions {
+                if r != row && c != col {
+                    new_vec.push(self.at(r, c));
+                }
+            }
+        }
+        Matrix::from_vector(self.dimensions - 1, &new_vec)
+    }
 }
 impl PartialEq for Matrix {
     fn eq(&self, other: &Matrix) -> bool {
@@ -209,5 +227,31 @@ mod tests {
     fn transposing_the_identity_matrix() {
         let actual = Matrix::identity().transpose();
         assert_eq!(Matrix::identity(), actual);
+    }
+    #[test]
+    fn calculating_the_determinant_of_a_2x2_matrix() {
+        let v = vec![1.0, 5.0, -3.0, 2.0];
+        let a = Matrix::from_vector(2, &v);
+        assert_eq!(17.0, a.determinant());
+    }
+    #[test]
+    fn a_submatrix_of_a_3x3_matrix_is_a_2x2_matrix() {
+        let va = vec![1.0, 5.0, 0.0, -3.0, 2.0, 7.0, 0.0, 6.0, -3.0];
+        let a = Matrix::from_vector(3, &va);
+        let vasub = vec![-3.0, 2.0, 0.0, 6.0];
+        let expected = Matrix::from_vector(2, &vasub);
+        assert_eq!(expected, a.submatrix(0, 2));
+    }
+    #[test]
+    fn a_submatrix_of_4x4_matrix_is_3x3_matrix() {
+        let va = vec![
+            -6.0, 1.0, 1.0, 6.0, -8.0, 5.0, 8.0, 6.0, -1.0, 0.0, 8.0, 2.0, -7.0, 1.0, -1.0, 1.0,
+        ];
+        let a = Matrix::from_vector(4, &va);
+
+        let vasub = vec![-6.0, 1.0, 6.0, -8.0, 8.0, 6.0, -7.0, -1.0, 1.0];
+        let expected = Matrix::from_vector(3, &vasub);
+
+        assert_eq!(expected, a.submatrix(2, 1));
     }
 }
