@@ -54,6 +54,9 @@ impl Matrix {
         }
         Matrix::from_vector(self.dimensions - 1, &new_vec)
     }
+    pub fn minor(&self, row: usize, col: usize) -> f64 {
+        self.submatrix(row, col).determinant()
+    }
 }
 impl PartialEq for Matrix {
     fn eq(&self, other: &Matrix) -> bool {
@@ -253,5 +256,13 @@ mod tests {
         let expected = Matrix::from_vector(3, &vasub);
 
         assert_eq!(expected, a.submatrix(2, 1));
+    }
+
+    #[test]
+    fn calculating_a_minor_of_a_3x3_matrix() {
+        let va = vec![3.0, 5.0, 0.0, 2.0, -1.0, -7.0, 6.0, -1.0, 5.0];
+        let a = Matrix::from_vector(3, &va);
+        let b = a.submatrix(1, 0);
+        assert_eq!(b.determinant(), a.minor(1, 0));
     }
 }
