@@ -73,10 +73,37 @@ impl Matrix {
             -m
         }
     }
+
+    pub fn invertible(&self) -> bool {
+        self.determinant() != 0.0
+    }
+
+    pub fn inverse(&self) -> Matrix {
+        assert!(self.invertible());
+
+        let mut new_vec: Vec<f64> = Vec::with_capacity(self.dimensions * self.dimensions);
+
+        // for row in 0..self.dimensions {
+        //     for col in 0..self.dimensions {
+        //         new_vec.push(0.0);
+        //     }
+        // }
+
+        let determinant = self.determinant();
+        for row in 0..self.dimensions {
+            for col in 0..self.dimensions {
+                let c = self.cofactor(row, col);
+                // new_vec[col * self.dimensions + row] = c / self.determinant();
+                // new_vec.push(c / determinant)
+                new_vec.push(self.cofactor(col, row) / determinant)
+            }
+        }
+        Matrix::from_vector(self.dimensions, &new_vec)
+    }
 }
 impl PartialEq for Matrix {
     fn eq(&self, other: &Matrix) -> bool {
-        let eps = 1e-6;
+        let eps = 1e-5;
         let equal_elements = |a: &[f64], b: &[f64]| -> bool {
             for (x, y) in a.iter().zip(b.iter()) {
                 if (x - y).abs() >= eps {
@@ -315,4 +342,95 @@ mod tests {
         assert_eq!(51.0, a.cofactor(0, 3));
         assert_eq!(-4071.0, a.determinant());
     }
+    #[test]
+    fn testing_invertible_matrix_for_invertibility() {
+        let v = vec![
+            6.0, 4.0, 4.0, 4.0, 5.0, 5.0, 7.0, 6.0, 4.0, -9.0, 3.0, -7.0, 9.0, 1.0, 7.0, -6.0,
+        ];
+        let a = Matrix::from_vector(4, &v);
+
+        assert_eq!(-2120.0, a.determinant());
+        assert!(a.invertible());
+    }
+
+    #[test]
+    fn testing_non_invertible_matrix_for_invertibility() {
+        let v = vec![
+            -4.0, 2.0, -2.0, -3.0, 9.0, 6.0, 2.0, 6.0, 0.0, -5.0, 1.0, -5.0, 0.0, 0.0, 0.0, 0.0,
+        ];
+        let a = Matrix::from_vector(4, &v);
+
+        assert_eq!(0.0, a.determinant());
+        assert!(!a.invertible());
+    }
+    #[test]
+    fn calculating_inverse_of_matrix() {
+        let v1 = vec![
+            -5.0, 2.0, 6.0, -8.0, 1.0, -5.0, 1.0, 8.0, 7.0, 7.0, -6.0, -7.0, 1.0, -3.0, 7.0, 4.0,
+        ];
+        let a = Matrix::from_vector(4, &v1);
+
+        let v2 = vec![
+            0.21805, 0.45113, 0.24060, -0.04511, -0.80827, -1.45677, -0.44361, 0.52068, -0.07895,
+            -0.22368, -0.05263, 0.19737, -0.52256, -0.81391, -0.30075, 0.30639,
+        ];
+        let b = a.inverse();
+        let expected = Matrix::from_vector(4, &v2);
+
+        assert_eq!(532.0, a.determinant());
+        assert_eq!(-160.0, a.cofactor(2, 3));
+        assert_eq!(-160.0 / 532.0, b.at(3, 2));
+        assert_eq!(105.0, a.cofactor(3, 2));
+        assert_eq!(105.0 / 532.0, b.at(2, 3));
+        assert_eq!(expected, b);
+    }
+
+    #[test]
+    fn calculating_inverse_of_another_matrix() {
+        let v1 = vec![
+            8.0, -5.0, 9.0, 2.0, 7.0, 5.0, 6.0, 1.0, -6.0, 0.0, 9.0, 6.0, -3.0, 0.0, -9.0, -4.0,
+        ];
+        let a = Matrix::from_vector(4, &v1);
+
+        let v2 = vec![
+            -0.15385, -0.15385, -0.28205, -0.53846, -0.07692, 0.12308, 0.02564, 0.03077, 0.35897,
+            0.35897, 0.43590, 0.92308, -0.69231, -0.69231, -0.76923, -1.92308,
+        ];
+
+        assert_eq!(Matrix::from_vector(4, &v2), a.inverse());
+    }
+
+    #[test]
+    fn calculating_inverse_of_third_matrix() {
+        let v1 = vec![
+            9.0, 3.0, 0.0, 9.0, -5.0, -2.0, -6.0, -3.0, -4.0, 9.0, 6.0, 4.0, -7.0, 6.0, 6.0, 2.0,
+        ];
+        let a = Matrix::from_vector(4, &v1);
+
+        let v2 = vec![
+            -0.04074, -0.07778, 0.14444, -0.22222, -0.07778, 0.03333, 0.36667, -0.33333, -0.02901,
+            -0.14630, -0.10926, 0.12963, 0.17778, 0.06667, -0.26667, 0.33333,
+        ];
+
+        assert_eq!(Matrix::from_vector(4, &v2), a.inverse());
+    }
+
+    #[test]
+    fn multiplying_product_by_its_inverse() {
+        let v1 = vec![
+            3.0, -9.0, 7.0, 3.0, 3.0, -8.0, 2.0, -9.0, -4.0, 4.0, 4.0, 1.0, -6.0, 5.0, -1.0, 1.0,
+        ];
+        let v2 = vec![
+            8.0, 2.0, 2.0, 2.0, 3.0, -1.0, 7.0, 0.0, 7.0, 0.0, 5.0, 4.0, 6.0, -2.0, 0.0, 5.0,
+        ];
+
+        let a = Matrix::from_vector(4, &v1);
+        let a2 = Matrix::from_vector(4, &v1);
+        let b = Matrix::from_vector(4, &v2);
+        let b2 = Matrix::from_vector(4, &v2);
+        let c = a * b;
+
+        assert_eq!(c * b2.inverse(), a2);
+    }
+
 }
