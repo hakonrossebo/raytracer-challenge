@@ -57,6 +57,15 @@ impl Matrix {
     pub fn minor(&self, row: usize, col: usize) -> f64 {
         self.submatrix(row, col).determinant()
     }
+
+    pub fn cofactor(&self, row: usize, col: usize) -> f64 {
+        let m = self.minor(row, col);
+        if (row + col) % 2 == 0 {
+            m
+        } else {
+            -m
+        }
+    }
 }
 impl PartialEq for Matrix {
     fn eq(&self, other: &Matrix) -> bool {
@@ -264,5 +273,15 @@ mod tests {
         let a = Matrix::from_vector(3, &va);
         let b = a.submatrix(1, 0);
         assert_eq!(b.determinant(), a.minor(1, 0));
+    }
+
+    #[test]
+    fn calculating_a_cofactor_of_a_3x3_matrix() {
+        let va = vec![3.0, 5.0, 0.0, 2.0, -1.0, -7.0, 6.0, -1.0, 5.0];
+        let a = Matrix::from_vector(3, &va);
+        assert_eq!(-12.0, a.minor(0, 0));
+        assert_eq!(-12.0, a.cofactor(0, 0));
+        assert_eq!(25.0, a.minor(1, 0));
+        assert_eq!(-25.0, a.cofactor(1, 0));
     }
 }
