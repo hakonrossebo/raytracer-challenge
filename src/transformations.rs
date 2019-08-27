@@ -187,4 +187,31 @@ mod tests {
     let expected = Tuple::point(2.0, 3.0, 7.0);
     assert_eq!(expected, transform * p);
   }
+  #[test]
+  fn individual_transformations_are_applied_in_sequence() {
+    let p = Tuple::point(1.0, 0.0, 1.0);
+    let a = rotation_x(std::f64::consts::PI / 2.0);
+    let b = scaling(5.0, 5.0, 5.0);
+    let c = translation(10.0, 5.0, 7.0);
+    let p2 = a * p;
+    let p2exp = Tuple::point(1.0, -1.0, 0.0);
+    assert_eq!(p2exp, p2);
+
+    let p3 = b * p2;
+    let p3exp = Tuple::point(5.0, -5.0, 0.0);
+    assert_eq!(p3exp, p3);
+    let p4 = c * p3;
+    let p4exp = Tuple::point(15.0, 0.0, 7.0);
+    assert_eq!(p4exp, p4);
+  }
+  #[test]
+  fn chained_transformations_must_be_applied_in_reverse_order() {
+    let p = Tuple::point(1.0, 0.0, 1.0);
+    let a = rotation_x(std::f64::consts::PI / 2.0);
+    let b = scaling(5.0, 5.0, 5.0);
+    let c = translation(10.0, 5.0, 7.0);
+    let t = c * a * b;
+    let texp = Tuple::point(15.0, 0.0, 7.0);
+    assert_eq!(texp, t * p);
+  }
 }
