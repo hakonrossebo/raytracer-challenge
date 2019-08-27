@@ -19,6 +19,12 @@ impl Matrix {
         let pos = self.dimensions * r + c;
         self.elements[pos]
     }
+    pub fn update_at(&self, r: usize, c: usize, v: f64) -> Matrix {
+        let pos = self.dimensions * r + c;
+        let mut new_vec = self.elements.to_vec();
+        new_vec[pos] = v;
+        Matrix::from_vector(self.dimensions, &new_vec)
+    }
 
     pub fn identity() -> Matrix {
         let vector = [
@@ -80,21 +86,11 @@ impl Matrix {
 
     pub fn inverse(&self) -> Matrix {
         assert!(self.invertible());
-
         let mut new_vec: Vec<f64> = Vec::with_capacity(self.dimensions * self.dimensions);
-
-        // for row in 0..self.dimensions {
-        //     for col in 0..self.dimensions {
-        //         new_vec.push(0.0);
-        //     }
-        // }
-
         let determinant = self.determinant();
         for row in 0..self.dimensions {
             for col in 0..self.dimensions {
                 let c = self.cofactor(row, col);
-                // new_vec[col * self.dimensions + row] = c / self.determinant();
-                // new_vec.push(c / determinant)
                 new_vec.push(self.cofactor(col, row) / determinant)
             }
         }
