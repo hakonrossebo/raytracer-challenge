@@ -38,6 +38,18 @@ pub fn rotation_z(r: f64) -> Matrix {
   tt
 }
 
+pub fn shearing(xy: f64, xz: f64, yx: f64, yz: f64, zx: f64, zy: f64) -> Matrix {
+  let t = Matrix::identity();
+  let tt = t
+    .update_at(0, 1, xy)
+    .update_at(0, 2, xz)
+    .update_at(1, 0, yx)
+    .update_at(1, 2, yz)
+    .update_at(2, 0, zx)
+    .update_at(2, 1, zy);
+  tt
+}
+
 #[cfg(test)]
 
 mod tests {
@@ -132,5 +144,47 @@ mod tests {
     let expected_full_quarter = Tuple::point(-1.0, 0.0, 0.0);
     assert_eq!(expected_half_quarter, half_quarter * p);
     assert_eq!(expected_full_quarter, full_quarter * p);
+  }
+  #[test]
+  fn a_shearing_transformation_moves_x_in_propoption_to_y() {
+    let transform = shearing(1.0, 0.0, 0.0, 0.0, 0.0, 0.0);
+    let p = Tuple::point(2.0, 3.0, 4.0);
+    let expected = Tuple::point(5.0, 3.0, 4.0);
+    assert_eq!(expected, transform * p);
+  }
+  #[test]
+  fn a_shearing_transformation_moves_x_in_propoption_to_z() {
+    let transform = shearing(0.0, 1.0, 0.0, 0.0, 0.0, 0.0);
+    let p = Tuple::point(2.0, 3.0, 4.0);
+    let expected = Tuple::point(6.0, 3.0, 4.0);
+    assert_eq!(expected, transform * p);
+  }
+  #[test]
+  fn a_shearing_transformation_moves_y_in_propoption_to_x() {
+    let transform = shearing(0.0, 0.0, 1.0, 0.0, 0.0, 0.0);
+    let p = Tuple::point(2.0, 3.0, 4.0);
+    let expected = Tuple::point(2.0, 5.0, 4.0);
+    assert_eq!(expected, transform * p);
+  }
+  #[test]
+  fn a_shearing_transformation_moves_y_in_propoption_to_z() {
+    let transform = shearing(0.0, 0.0, 0.0, 1.0, 0.0, 0.0);
+    let p = Tuple::point(2.0, 3.0, 4.0);
+    let expected = Tuple::point(2.0, 7.0, 4.0);
+    assert_eq!(expected, transform * p);
+  }
+  #[test]
+  fn a_shearing_transformation_moves_z_in_propoption_to_x() {
+    let transform = shearing(0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
+    let p = Tuple::point(2.0, 3.0, 4.0);
+    let expected = Tuple::point(2.0, 3.0, 6.0);
+    assert_eq!(expected, transform * p);
+  }
+  #[test]
+  fn a_shearing_transformation_moves_z_in_propoption_to_y() {
+    let transform = shearing(0.0, 0.0, 0.0, 0.0, 0.0, 1.0);
+    let p = Tuple::point(2.0, 3.0, 4.0);
+    let expected = Tuple::point(2.0, 3.0, 7.0);
+    assert_eq!(expected, transform * p);
   }
 }
