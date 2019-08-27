@@ -1,5 +1,5 @@
 use crate::tuple::Tuple;
-use std::ops::{Add, Div, Mul, Neg, Sub};
+use std::ops::Mul;
 
 #[derive(Debug)]
 pub struct Matrix {
@@ -90,8 +90,8 @@ impl Matrix {
         let determinant = self.determinant();
         for row in 0..self.dimensions {
             for col in 0..self.dimensions {
-                let c = self.cofactor(row, col);
-                new_vec.push(self.cofactor(col, row) / determinant)
+                let c = self.cofactor(col, row);
+                new_vec.push(c / determinant)
             }
         }
         Matrix::from_vector(self.dimensions, &new_vec)

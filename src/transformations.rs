@@ -1,5 +1,4 @@
 use crate::matrix::Matrix;
-use crate::tuple::Tuple;
 
 pub fn translation(x: f64, y: f64, z: f64) -> Matrix {
   let t = Matrix::identity();
@@ -16,6 +15,7 @@ pub fn scaling(x: f64, y: f64, z: f64) -> Matrix {
 
 mod tests {
   use super::*;
+  use crate::tuple::Tuple;
 
   #[test]
   fn multiplying_by_a_translation_matrix() {
@@ -49,8 +49,23 @@ mod tests {
   #[test]
   fn a_scaling_matrix_applied_to_a_vector() {
     let transform = scaling(2.0, 3.0, 4.0);
-    let p = Tuple::vector(-4.0, 6.0, 8.0);
+    let v = Tuple::vector(-4.0, 6.0, 8.0);
     let expected = Tuple::vector(-8.0, 18.0, 32.0);
+    assert_eq!(expected, transform * v);
+  }
+  #[test]
+  fn multiplying_by_the_inverse_of_a_scaling() {
+    let transform = scaling(2.0, 3.0, 4.0);
+    let inv = transform.inverse();
+    let v = Tuple::vector(-4.0, 6.0, 8.0);
+    let expected = Tuple::vector(-2.0, 2.0, 2.0);
+    assert_eq!(expected, inv * v);
+  }
+  #[test]
+  fn reflection_is_scaling_by_a_negative_value() {
+    let transform = scaling(-1.0, 1.0, 1.0);
+    let p = Tuple::point(2.0, 3.0, 4.0);
+    let expected = Tuple::point(-2.0, 3.0, 4.0);
     assert_eq!(expected, transform * p);
   }
 }
