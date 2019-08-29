@@ -1,3 +1,4 @@
+use crate::intersections::*;
 use crate::matrix::Matrix;
 use crate::rays::Ray;
 use crate::tuple::Tuple;
@@ -15,20 +16,26 @@ impl Sphere {
       radius: 1.0,
     }
   }
-  pub fn intersects(&self, ray: Ray) -> Vec<f64> {
-    let mut v: Vec<f64> = Vec::new();
+  pub fn intersects(&self, ray: Ray) -> Vec<Intersection> {
+    let mut v: Vec<Intersection> = Vec::new();
 
     let sphere_to_ray = ray.origin - self.origin;
     let a = ray.direction.dot(ray.direction);
     let b = 2.0 * ray.direction.dot(sphere_to_ray);
     let c = sphere_to_ray.dot(sphere_to_ray) - 1.0;
     let discriminant: f64 = b * b - 4.0 * a * c;
+    let t1;
+    let t2;
     if discriminant >= 0.0 {
-      let t1 = (-b - discriminant.sqrt()) / (2.0 * a);
-      let t2 = (-b + discriminant.sqrt()) / (2.0 * a);
-      v.push(t1);
-      v.push(t2);
+      t1 = (-b - discriminant.sqrt()) / (2.0 * a);
+      t2 = (-b + discriminant.sqrt()) / (2.0 * a);
+      // let i1 = Intersection::new(t1, self);
+      // let i2 = Intersection::new(t2, self);
+      // v.push(Intersection::new(t1, &self));
+      // v.push(Intersection::new(t2, &self));
+      v = vec![Intersection::new(t1, self), Intersection::new(t2, self)]
     }
+    // intersections(v)
     v
   }
 }
@@ -47,8 +54,8 @@ mod tests {
     let s = Sphere::new();
     let xs = s.intersects(r);
     assert_eq!(2, xs.len());
-    assert_eq!(4.0, xs[0]);
-    assert_eq!(6.0, xs[1]);
+    assert_eq!(4.0, xs[0].t);
+    assert_eq!(6.0, xs[1].t);
   }
   #[test]
   fn a_ray_intersects_a_sphere_at_a_tangent() {
@@ -58,8 +65,8 @@ mod tests {
     let s = Sphere::new();
     let xs = s.intersects(r);
     assert_eq!(2, xs.len());
-    assert_eq!(5.0, xs[0]);
-    assert_eq!(5.0, xs[1]);
+    assert_eq!(5.0, xs[0].t);
+    assert_eq!(5.0, xs[1].t);
   }
   #[test]
   fn a_ray_intersects_misses_a_sphere() {
@@ -78,8 +85,8 @@ mod tests {
     let s = Sphere::new();
     let xs = s.intersects(r);
     assert_eq!(2, xs.len());
-    assert_eq!(-1.0, xs[0]);
-    assert_eq!(1.0, xs[1]);
+    assert_eq!(-1.0, xs[0].t);
+    assert_eq!(1.0, xs[1].t);
   }
   #[test]
   fn a_sphere_is_behind_a_ray() {
@@ -89,8 +96,8 @@ mod tests {
     let s = Sphere::new();
     let xs = s.intersects(r);
     assert_eq!(2, xs.len());
-    assert_eq!(-6.0, xs[0]);
-    assert_eq!(-4.0, xs[1]);
+    assert_eq!(-6.0, xs[0].t);
+    assert_eq!(-4.0, xs[1].t);
   }
 
 }
