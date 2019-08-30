@@ -7,6 +7,7 @@ use crate::tuple::Tuple;
 pub struct Sphere {
   origin: Tuple,
   radius: f64,
+  pub transform: Matrix,
 }
 
 impl Sphere {
@@ -14,6 +15,7 @@ impl Sphere {
     Sphere {
       origin: Tuple::point(0.0, 0.0, 0.0),
       radius: 1.0,
+      transform: Matrix::identity(),
     }
   }
   pub fn intersects(&self, ray: Ray) -> Vec<Intersection> {
@@ -38,12 +40,18 @@ impl Sphere {
     // intersections(v)
     v
   }
+
+  pub fn set_transform(&mut self, t: Matrix) {
+    self.transform = t;
+  }
 }
 
 #[cfg(test)]
 
 mod tests {
   use super::*;
+  use crate::matrix::Matrix;
+  use crate::transformations::translation;
   use crate::tuple::Tuple;
 
   #[test]
@@ -98,6 +106,19 @@ mod tests {
     assert_eq!(2, xs.len());
     assert_eq!(-6.0, xs[0].t);
     assert_eq!(-4.0, xs[1].t);
+  }
+  #[test]
+  fn a_spheres_default_transformation() {
+    let s = Sphere::new();
+    assert_eq!(Matrix::identity(), s.transform);
+  }
+  #[test]
+  fn changing_a_spheres_transformation() {
+    let mut s = Sphere::new();
+    let t = translation(2.0, 3.0, 4.0);
+    //TODO: Can I avoid clone here?
+    s.set_transform(t.clone());
+    assert_eq!(t, s.transform);
   }
 
 }
