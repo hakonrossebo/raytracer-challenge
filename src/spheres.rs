@@ -18,7 +18,8 @@ impl Sphere {
       transform: Matrix::identity(),
     }
   }
-  pub fn intersects(&self, ray: Ray) -> Vec<Intersection> {
+  pub fn intersects(&self, in_ray: Ray) -> Vec<Intersection> {
+    let ray = in_ray.transform(self.transform.clone().inverse());
     let mut v: Vec<Intersection> = Vec::new();
 
     let sphere_to_ray = ray.origin - self.origin;
@@ -51,7 +52,7 @@ impl Sphere {
 mod tests {
   use super::*;
   use crate::matrix::Matrix;
-  use crate::transformations::translation;
+  use crate::transformations::{scaling, translation};
   use crate::tuple::Tuple;
 
   #[test]
@@ -120,5 +121,26 @@ mod tests {
     s.set_transform(t.clone());
     assert_eq!(t, s.transform);
   }
-
+  #[test]
+  fn intersecting_a_scaled_sphere_with_a_ray() {
+    let origin = Tuple::point(0.0, 0.0, -5.0);
+    let direction = Tuple::vector(0.0, 0.0, 1.0);
+    let r = Ray::new(origin, direction);
+    let mut s = Sphere::new();
+    s.set_transform(scaling(2.0, 2.0, 2.0));
+    let xs = s.intersects(r);
+    assert_eq!(2, xs.len());
+    assert_eq!(3.0, xs[0].t);
+    assert_eq!(7.0, xs[1].t);
+  }
+  #[test]
+  fn intersecting_a_translated_sphere_with_a_ray() {
+    let origin = Tuple::point(0.0, 0.0, -5.0);
+    let direction = Tuple::vector(0.0, 0.0, 1.0);
+    let r = Ray::new(origin, direction);
+    let mut s = Sphere::new();
+    s.set_transform(translation(5.0, 0.0, 0.0));
+    let xs = s.intersects(r);
+    assert_eq!(0, xs.len());
+  }
 }
