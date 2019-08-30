@@ -1,7 +1,7 @@
 use crate::tuple::Tuple;
 use std::ops::Mul;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Matrix {
     pub dimensions: usize,
     elements: Vec<f64>,

@@ -17,12 +17,21 @@ impl Ray {
   pub fn position(&self, t: f64) -> Tuple {
     self.origin + self.direction * t
   }
+
+  pub fn transform(&self, m: Matrix) -> Ray {
+    Ray {
+      //TODO:Avoid clone?
+      origin: m.clone() * self.origin,
+      direction: m.clone() * self.direction,
+    }
+  }
 }
 
 #[cfg(test)]
 
 mod tests {
   use super::*;
+  use crate::transformations::{scaling, translation};
   use crate::tuple::Tuple;
   #[test]
   fn creating_and_querying_a_ray() {
@@ -49,6 +58,29 @@ mod tests {
     assert_eq!(e1, p1);
     assert_eq!(e2, p2);
     assert_eq!(e3, p3);
+  }
+  #[test]
+  fn translating_a_ray() {
+    let origin = Tuple::point(1.0, 2.0, 3.0);
+    let direction = Tuple::vector(0.0, 1.0, 0.0);
+    let r = Ray::new(origin, direction);
+    let m = translation(3.0, 4.0, 5.0);
+    let r2 = r.transform(m);
+    let expected_moved_origin = Tuple::point(4.0, 6.0, 8.0);
+    assert_eq!(expected_moved_origin, r2.origin);
+    assert_eq!(direction, r2.direction);
+  }
+  #[test]
+  fn scaling_a_ray() {
+    let origin = Tuple::point(1.0, 2.0, 3.0);
+    let direction = Tuple::vector(0.0, 1.0, 0.0);
+    let r = Ray::new(origin, direction);
+    let m = scaling(2.0, 3.0, 4.0);
+    let r2 = r.transform(m);
+    let expected_moved_origin = Tuple::point(2.0, 6.0, 12.0);
+    let expected_new_direction = Tuple::vector(0.0, 3.0, 0.0);
+    assert_eq!(expected_moved_origin, r2.origin);
+    assert_eq!(expected_new_direction, r2.direction);
   }
 
 }
