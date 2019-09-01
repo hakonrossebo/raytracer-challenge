@@ -18,7 +18,7 @@ impl Sphere {
       transform: Matrix::identity(),
     }
   }
-  pub fn intersects(&self, in_ray: Ray) -> Vec<Intersection> {
+  pub fn intersect(&self, in_ray: Ray) -> Vec<Intersection> {
     let ray = in_ray.transform(self.transform.clone().inverse());
     let mut v: Vec<Intersection> = Vec::new();
 
@@ -32,13 +32,10 @@ impl Sphere {
     if discriminant >= 0.0 {
       t1 = (-b - discriminant.sqrt()) / (2.0 * a);
       t2 = (-b + discriminant.sqrt()) / (2.0 * a);
-      // let i1 = Intersection::new(t1, self);
-      // let i2 = Intersection::new(t2, self);
-      // v.push(Intersection::new(t1, &self));
-      // v.push(Intersection::new(t2, &self));
-      v = vec![Intersection::new(t1, self), Intersection::new(t2, self)]
+      let i1 = Intersection::new(t1, self);
+      let i2 = Intersection::new(t2, self);
+      v = intersections(vec![i1, i2]);
     }
-    // intersections(v)
     v
   }
 
@@ -61,7 +58,7 @@ mod tests {
     let direction = Tuple::vector(0.0, 0.0, 1.0);
     let r = Ray::new(origin, direction);
     let s = Sphere::new();
-    let xs = s.intersects(r);
+    let xs = s.intersect(r);
     assert_eq!(2, xs.len());
     assert_eq!(4.0, xs[0].t);
     assert_eq!(6.0, xs[1].t);
@@ -72,7 +69,7 @@ mod tests {
     let direction = Tuple::vector(0.0, 0.0, 1.0);
     let r = Ray::new(origin, direction);
     let s = Sphere::new();
-    let xs = s.intersects(r);
+    let xs = s.intersect(r);
     assert_eq!(2, xs.len());
     assert_eq!(5.0, xs[0].t);
     assert_eq!(5.0, xs[1].t);
@@ -83,7 +80,7 @@ mod tests {
     let direction = Tuple::vector(0.0, 0.0, 1.0);
     let r = Ray::new(origin, direction);
     let s = Sphere::new();
-    let xs = s.intersects(r);
+    let xs = s.intersect(r);
     assert_eq!(0, xs.len());
   }
   #[test]
@@ -92,7 +89,7 @@ mod tests {
     let direction = Tuple::vector(0.0, 0.0, 1.0);
     let r = Ray::new(origin, direction);
     let s = Sphere::new();
-    let xs = s.intersects(r);
+    let xs = s.intersect(r);
     assert_eq!(2, xs.len());
     assert_eq!(-1.0, xs[0].t);
     assert_eq!(1.0, xs[1].t);
@@ -103,7 +100,7 @@ mod tests {
     let direction = Tuple::vector(0.0, 0.0, 1.0);
     let r = Ray::new(origin, direction);
     let s = Sphere::new();
-    let xs = s.intersects(r);
+    let xs = s.intersect(r);
     assert_eq!(2, xs.len());
     assert_eq!(-6.0, xs[0].t);
     assert_eq!(-4.0, xs[1].t);
@@ -128,7 +125,7 @@ mod tests {
     let r = Ray::new(origin, direction);
     let mut s = Sphere::new();
     s.set_transform(scaling(2.0, 2.0, 2.0));
-    let xs = s.intersects(r);
+    let xs = s.intersect(r);
     assert_eq!(2, xs.len());
     assert_eq!(3.0, xs[0].t);
     assert_eq!(7.0, xs[1].t);
@@ -140,7 +137,7 @@ mod tests {
     let r = Ray::new(origin, direction);
     let mut s = Sphere::new();
     s.set_transform(translation(5.0, 0.0, 0.0));
-    let xs = s.intersects(r);
+    let xs = s.intersect(r);
     assert_eq!(0, xs.len());
   }
 }
