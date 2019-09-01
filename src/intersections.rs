@@ -19,19 +19,17 @@ pub fn intersections(xs:Vec<Intersection>) -> Vec<Intersection> {
     v
 }
 pub fn hit(xs: Vec<Intersection>) -> Option<Intersection> {
-    for x in xs {
-        if x.t >= 0.0 {
-            return Some(x);
-        }
-    }
-    None
+    xs
+    .iter()
+    .filter(|x|x.t >= 0.0)
+    .min_by(|a, b| a.t.partial_cmp(&b.t).unwrap())
+    .cloned()
 }
 
 #[cfg(test)]
 
 mod tests {
     use super::*;
-    use crate::tuple::Tuple;
     #[test]
     fn an_intersection_encapsulates_t_and_an_object() {
         let s = Sphere::new();
