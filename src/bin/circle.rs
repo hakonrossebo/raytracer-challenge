@@ -49,10 +49,15 @@ fn main() {
 fn write_ppm_to_file(ppm: &String) {
   let date: DateTime<Utc> = Utc::now();
   let dateformatted = date.format("%Y-%m-%d_%H_%M_%S").to_string();
-  let filename = format!("/tmp/clock_test_{}.ppm", dateformatted);
-  let mut file = File::create(filename).expect("Create file failed.");
+  let mut filename: String;
+  if cfg!(windows) {
+    filename = format!("c:/temp/circle_test_{}.ppm", dateformatted);
+  } else {
+    filename = format!("/tmp/circle_test_{}.ppm", dateformatted);
+  }
+  let mut file = File::create(filename.clone()).expect("Create file failed.");
   file
     .write_all(ppm.as_bytes())
     .expect("Writing file failed.");
-  println!("File written to disk.")
+  println!("File written to disk. in {}", filename);
 }
