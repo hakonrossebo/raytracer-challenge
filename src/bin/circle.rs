@@ -5,6 +5,7 @@ use raytracer_challenge::canvas::Canvas;
 use raytracer_challenge::intersections::hit;
 use raytracer_challenge::rays::Ray;
 use raytracer_challenge::spheres::Sphere;
+use raytracer_challenge::transformations::*;
 use raytracer_challenge::tuple::Tuple;
 use std::fs::File;
 use std::io::Write;
@@ -20,7 +21,9 @@ fn main() {
   let wall_size = 7.0;
   let pixel_size = wall_size / canvas_width as f64;
   let half = wall_size / 2.0;
-  let shape = Sphere::new();
+  let mut shape = Sphere::new();
+  // shape.set_transform(scaling(0.5, 1.0, 1.0));
+  shape.set_transform(shearing(1.0, 0.0, 0.0, 0.0, 0.0, 0.0) * scaling(0.5, 1.0, 1.0));
   let mut canvas = Canvas::new(canvas_width, canvas_height);
   let color = Tuple::color(1.0, 0.0, 0.0);
   println!("Starting circle...");
