@@ -1,5 +1,6 @@
 use crate::tuple::Tuple;
 
+#[derive(Clone, Copy, Debug, PartialEq)]
 pub struct Material {
     pub color: Tuple,
     pub ambient: f64,

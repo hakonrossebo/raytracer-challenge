@@ -1,4 +1,5 @@
 use crate::intersections::*;
+use crate::materials::Material;
 use crate::matrix::Matrix;
 use crate::rays::Ray;
 use crate::tuple::Tuple;
@@ -8,6 +9,7 @@ pub struct Sphere {
   origin: Tuple,
   radius: f64,
   pub transform: Matrix,
+  pub material: Material,
 }
 
 impl Sphere {
@@ -16,6 +18,7 @@ impl Sphere {
       origin: Tuple::point(0.0, 0.0, 0.0),
       radius: 1.0,
       transform: Matrix::identity(),
+      material: Material::new(),
     }
   }
   pub fn intersect(&self, in_ray: Ray) -> Vec<Intersection> {
@@ -51,12 +54,17 @@ impl Sphere {
     world_normal.set_w(0.0);
     world_normal.normalize()
   }
+
+  pub fn set_material(&mut self, m: Material) {
+    self.material = m;
+  }
 }
 
 #[cfg(test)]
 
 mod tests {
   use super::*;
+  use crate::materials::Material;
   use crate::matrix::Matrix;
   use crate::transformations::{rotation_z, scaling, translation};
   use crate::tuple::Tuple;
@@ -209,5 +217,20 @@ mod tests {
     let n = s.normal_at(p);
     let expected = Tuple::vector(0.0, 0.97014, -0.24254);
     assert_eq!(expected, n);
+  }
+  #[test]
+  fn a_sphere_has_a_default_material() {
+    let s = Sphere::new();
+    let expected = Material::new();
+    let m = s.material;
+    assert_eq!(expected, m);
+  }
+  #[test]
+  fn a_sphere_may_be_assigned_a_material() {
+    let mut s = Sphere::new();
+    let mut m = s.material;
+    m.ambient = 1.0;
+    s.set_material(m.clone());
+    assert_eq!(m, s.material);
   }
 }
