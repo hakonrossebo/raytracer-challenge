@@ -1,16 +1,20 @@
 use crate::spheres::Sphere;
 use std::cmp::Ordering;
 
+
 #[derive(Debug, PartialEq, Clone)]
 pub struct Intersection<'a> {
     pub t: f64,
     pub object: &'a Sphere,
 }
 
+
+
 impl<'a> Intersection<'a> {
     pub fn new(tt: f64, oo: &'a Sphere) -> Intersection<'a> {
         Intersection { t: tt, object: oo }
     }
+
 }
 
 pub fn intersections(xs:Vec<Intersection>) -> Vec<Intersection> {
@@ -25,6 +29,7 @@ pub fn hit(xs: Vec<Intersection>) -> Option<Intersection> {
     .min_by(|a, b| a.t.partial_cmp(&b.t).unwrap())
     .cloned()
 }
+
 
 #[cfg(test)]
 
