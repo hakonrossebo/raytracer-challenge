@@ -33,6 +33,9 @@ impl Tuple {
     pub fn set_w(&mut self, new_w: f64) {
         self.3 = new_w;
     }
+    pub fn reflect(self, normal: Tuple) -> Tuple {
+        self - normal * 2.0 * self.dot(normal)
+    }
 }
 
 impl Add for Tuple {
@@ -286,5 +289,21 @@ mod tests {
         let c2 = Tuple::color(0.9, 1.0, 0.1);
         let expected = Tuple::color(0.9, 0.2, 0.04);
         assert_eq!(expected, c1 * c2);
+    }
+    #[test]
+    fn reflecting_a_vector_approaching_at_45_degrees() {
+        let v = Tuple::vector(1.0, -1.0, 0.0);
+        let n = Tuple::vector(0.0, 1.0, 0.0);
+        let r = v.reflect(n);
+        let expected = Tuple::vector(1.0, 1.0, 0.0);
+        assert_eq!(expected, r);
+    }
+    #[test]
+    fn reflecting_a_vector_off_a_slanted_surface() {
+        let v = Tuple::vector(0.0, -1.0, 0.0);
+        let n = Tuple::vector(2_f64.sqrt() / 2.0, 2_f64.sqrt() / 2.0, 0.0);
+        let r = v.reflect(n);
+        let expected = Tuple::vector(1.0, 0.0, 0.0);
+        assert_eq!(expected, r);
     }
 }
