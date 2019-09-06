@@ -1,5 +1,6 @@
 extern crate chrono;
 extern crate raytracer_challenge;
+extern crate num_cpus;
 
 extern crate image as im;
 extern crate piston_window;
@@ -27,9 +28,6 @@ fn main() {
     let (width, height) = (500, 500);
     let (tx, rx) = mpsc::channel();
 
-    thread::spawn(move || {
-        perform_render(width, height, &tx);
-    });
 
     let opengl = OpenGL::V3_2;
 
@@ -47,6 +45,9 @@ fn main() {
     };
     let mut texture: G2dTexture =
         Texture::from_image(&mut texture_context, &canvas, &TextureSettings::new()).unwrap();
+    thread::spawn(move || {
+        perform_render(width, height, &tx);
+    });
 
     while let Some(e) = window.next() {
         let received = rx.try_recv();
@@ -87,7 +88,12 @@ fn convert_and_clamp(colval: f64) -> u8 {
 }
 
 fn perform_render(canvas_width: u32, canvas_height: u32, s: &std::sync::mpsc::Sender<Vec<Pixel>>) {
-    let n_workers = 8;
+    let num_logical_cpus = num_cpus::get();
+    let num_physical_cpus = num_cpus::get_physical();
+    println!("Logical CPUs: {}", num_logical_cpus);
+    println!("Physical CPUs: {}", num_physical_cpus);
+
+    let n_workers = num_physical_cpus;
     let pool = ThreadPool::new(n_workers);
 
     let ray_origin = Tuple::point(0.0, 0.0, -5.0);
