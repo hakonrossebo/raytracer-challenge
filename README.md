@@ -2,8 +2,12 @@
 
 Based on the Jamis Buck book - https://pragprog.com/book/jbtracer/the-ray-tracer-challenge
 
-- To test projectile: cargo run --bin projectile
-- To test clock: cargo run --bin clock
+Testable binaries
+- cargo run --bin projectile
+- cargo run --bin clock
+- cargo run --bin pistonwindowtest
+- cargo run --bin circle3d
+- cargo run --bin multithreadtest
 
 # Unit testing
 

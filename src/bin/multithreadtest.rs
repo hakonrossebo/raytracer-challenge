@@ -104,6 +104,7 @@ fn perform_render(canvas_width: u32, canvas_height: u32, s: &std::sync::mpsc::Se
     let mut mat = Material::new();
     mat.color = Tuple::color(1.0, 1.0, 0.2);
     shape.set_material(mat);
+    let ashape = Arc::new(shape);
     let light_position = Tuple::point(-10.0, 10.0, -10.0);
     let light_color = Tuple::color(1.0, 1.0, 1.0);
     let light = Arc::new(PointLight::new(light_position, light_color));
@@ -113,8 +114,9 @@ fn perform_render(canvas_width: u32, canvas_height: u32, s: &std::sync::mpsc::Se
     println!("Starting circle...");
     for y in 0..canvas_height {
         let s = s.clone();
-        let shape = shape.clone();
-        // let light = light.clone();
+        // let shape = shape.clone();
+        // let shape_clone:Arc<&Sphere> = Arc::clone(&shape);
+        let shape_clone = Arc::clone(&ashape);
         let light_clone = Arc::clone(&light);
 
         pool.execute(move || {
@@ -125,13 +127,12 @@ fn perform_render(canvas_width: u32, canvas_height: u32, s: &std::sync::mpsc::Se
                 let world_x = -half + pixel_size * x as f64;
                 let position = Tuple::point(world_x, world_y, wall_z);
                 let r = Ray::new(ray_origin, (position - ray_origin).normalize());
-                let xs = shape.intersect(r.clone());
+                let xs = shape_clone.intersect(r.clone());
 
                 if let Some(hit) = hit(xs) {
                     let point = r.clone().position(hit.t);
                     let normal = hit.object.normal_at(point);
                     let eye = -r.direction;
-                    // let ssx:PointLight = Arc::downgrade(light_clone);
                     let color = hit
                         .object
                         .material
