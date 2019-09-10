@@ -1,5 +1,6 @@
 use crate::lights::PointLight;
 use crate::tuple::Tuple;
+use std::sync::Arc;
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct Material {
@@ -22,7 +23,13 @@ impl Material {
         }
     }
 
-    pub fn lighting(&self, light: PointLight, point: Tuple, eyev: Tuple, normalv: Tuple) -> Tuple {
+    pub fn lighting(
+        &self,
+        light: &Arc<PointLight>,
+        point: Tuple,
+        eyev: Tuple,
+        normalv: Tuple,
+    ) -> Tuple {
         let black = Tuple::color(0.0, 0.0, 0.0);
         let ambient = Tuple::color(0.0, 0.0, 0.0);
         let mut diffuse = Tuple::color(0.0, 0.0, 0.0);
@@ -87,7 +94,8 @@ mod tests {
         let eyev = Tuple::vector(0.0, 0.0, -1.0);
         let normalv = Tuple::vector(0.0, 0.0, -1.0);
         let light = PointLight::new(Tuple::point(0.0, 0.0, -10.0), Tuple::color(1.0, 1.0, 1.0));
-        let result = m.lighting(light, position, eyev, normalv);
+        let alight = Arc::new(light);
+        let result = m.lighting(&alight, position, eyev, normalv);
         let expected = Tuple::color(1.9, 1.9, 1.9);
         assert_eq!(expected, result);
     }
@@ -98,7 +106,8 @@ mod tests {
         let eyev = Tuple::vector(0.0, 2_f64.sqrt() / 2.0, -2_f64.sqrt() / 2.0);
         let normalv = Tuple::vector(0.0, 0.0, -1.0);
         let light = PointLight::new(Tuple::point(0.0, 0.0, -10.0), Tuple::color(1.0, 1.0, 1.0));
-        let result = m.lighting(light, position, eyev, normalv);
+        let alight = Arc::new(light);
+        let result = m.lighting(&alight, position, eyev, normalv);
         let expected = Tuple::color(1.0, 1.0, 1.0);
         assert_eq!(expected, result);
     }
@@ -109,7 +118,8 @@ mod tests {
         let eyev = Tuple::vector(0.0, 0.0, -1.0);
         let normalv = Tuple::vector(0.0, 0.0, -1.0);
         let light = PointLight::new(Tuple::point(0.0, 10.0, -10.0), Tuple::color(1.0, 1.0, 1.0));
-        let result = m.lighting(light, position, eyev, normalv);
+        let alight = Arc::new(light);
+        let result = m.lighting(&alight, position, eyev, normalv);
         let expected = Tuple::color(0.7364, 0.7364, 0.7364);
         assert_eq!(expected, result);
     }
@@ -120,7 +130,8 @@ mod tests {
         let eyev = Tuple::vector(0.0, -2_f64.sqrt() / 2.0, -2_f64.sqrt() / 2.0);
         let normalv = Tuple::vector(0.0, 0.0, -1.0);
         let light = PointLight::new(Tuple::point(0.0, 10.0, -10.0), Tuple::color(1.0, 1.0, 1.0));
-        let result = m.lighting(light, position, eyev, normalv);
+        let alight = Arc::new(light);
+        let result = m.lighting(&alight, position, eyev, normalv);
         let expected = Tuple::color(1.6364, 1.6364, 1.6364);
         assert_eq!(expected, result);
     }
@@ -131,7 +142,8 @@ mod tests {
         let eyev = Tuple::vector(0.0, 0.0, -1.0);
         let normalv = Tuple::vector(0.0, 0.0, -1.0);
         let light = PointLight::new(Tuple::point(0.0, 0.0, 10.0), Tuple::color(1.0, 1.0, 1.0));
-        let result = m.lighting(light, position, eyev, normalv);
+        let alight = Arc::new(light);
+        let result = m.lighting(&alight, position, eyev, normalv);
         let expected = Tuple::color(0.1, 0.1, 0.1);
         assert_eq!(expected, result);
     }

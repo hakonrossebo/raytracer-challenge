@@ -9,6 +9,7 @@ use raytracer_challenge::materials::Material;
 use raytracer_challenge::rays::Ray;
 use raytracer_challenge::spheres::Sphere;
 use raytracer_challenge::tuple::Tuple;
+use std::sync::Arc;
 
 fn main() {
   let canvas_width = 100;
@@ -44,10 +45,8 @@ fn main() {
         let point = r.clone().position(hit.t);
         let normal = hit.object.normal_at(point);
         let eye = -r.direction;
-        color = hit
-          .object
-          .material
-          .lighting(light.clone(), point, eye, normal);
+        let alight = Arc::new(light.clone());
+        color = hit.object.material.lighting(&alight, point, eye, normal);
         canvas.write_pixel(x, y, color);
       }
     }

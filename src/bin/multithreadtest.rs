@@ -1,11 +1,10 @@
 extern crate chrono;
-extern crate raytracer_challenge;
 extern crate num_cpus;
+extern crate raytracer_challenge;
 
 extern crate image as im;
 extern crate piston_window;
 use piston_window::*;
-use raytracer_challenge::canvas::Canvas;
 use raytracer_challenge::file::*;
 use raytracer_challenge::intersections::hit;
 use raytracer_challenge::lights::PointLight;
@@ -14,6 +13,7 @@ use raytracer_challenge::rays::Ray;
 use raytracer_challenge::spheres::Sphere;
 use raytracer_challenge::tuple::Tuple;
 use std::sync::mpsc;
+use std::sync::Arc;
 use std::thread;
 use threadpool::ThreadPool;
 
@@ -25,9 +25,8 @@ pub struct Pixel {
 }
 
 fn main() {
-    let (width, height) = (500, 500);
+    let (width, height) = (200, 200);
     let (tx, rx) = mpsc::channel();
-
 
     let opengl = OpenGL::V3_2;
 
@@ -107,7 +106,7 @@ fn perform_render(canvas_width: u32, canvas_height: u32, s: &std::sync::mpsc::Se
     shape.set_material(mat);
     let light_position = Tuple::point(-10.0, 10.0, -10.0);
     let light_color = Tuple::color(1.0, 1.0, 1.0);
-    let light = PointLight::new(light_position, light_color);
+    let light = Arc::new(PointLight::new(light_position, light_color));
 
     // shape.set_transform(scaling(0.5, 1.0, 1.0));
     // shape.set_transform(shearing(1.0, 0.0, 0.0, 0.0, 0.0, 0.0) * scaling(0.5, 1.0, 1.0));
@@ -115,7 +114,8 @@ fn perform_render(canvas_width: u32, canvas_height: u32, s: &std::sync::mpsc::Se
     for y in 0..canvas_height {
         let s = s.clone();
         let shape = shape.clone();
-        let light = light.clone();
+        // let light = light.clone();
+        let light_clone = Arc::clone(&light);
 
         pool.execute(move || {
             let world_y = half - pixel_size * y as f64;
@@ -131,10 +131,11 @@ fn perform_render(canvas_width: u32, canvas_height: u32, s: &std::sync::mpsc::Se
                     let point = r.clone().position(hit.t);
                     let normal = hit.object.normal_at(point);
                     let eye = -r.direction;
+                    // let ssx:PointLight = Arc::downgrade(light_clone);
                     let color = hit
                         .object
                         .material
-                        .lighting(light.clone(), point, eye, normal);
+                        .lighting(&light_clone, point, eye, normal);
                     pixels.push(Pixel {
                         x: x,
                         y: y,
