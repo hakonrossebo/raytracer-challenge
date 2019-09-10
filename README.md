@@ -9,6 +9,8 @@ Testable binaries
 - cargo run --bin circle3d
 - cargo run --bin multithreadtest
 
+New binaries will be added as chapters are beeing finished.
+
 # Unit testing
 
 Use cargo-watch (cargo install cargo-watch) and run cargo-watch -x test
