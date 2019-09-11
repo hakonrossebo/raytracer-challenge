@@ -12,7 +12,7 @@ pub struct Material {
 }
 
 impl Material {
-    pub fn new() -> Material {
+    pub fn default() -> Material {
         let c = Tuple::color(1.0, 1.0, 1.0);
         Material {
             color: c,
@@ -31,8 +31,7 @@ impl Material {
         normalv: Tuple,
     ) -> Tuple {
         let black = Tuple::color(0.0, 0.0, 0.0);
-        let ambient = Tuple::color(0.0, 0.0, 0.0);
-        let mut diffuse = Tuple::color(0.0, 0.0, 0.0);
+        let diffuse;
         let mut specular = Tuple::color(0.0, 0.0, 0.0);
 
         // Combine the surface color with the light's color/intensity
@@ -73,13 +72,15 @@ impl Material {
 }
 
 #[cfg(test)]
+#[allow(clippy::float_cmp)]
+
 mod tests {
     use super::*;
     use crate::lights::PointLight;
 
     #[test]
     fn the_default_material() {
-        let m = Material::new();
+        let m = Material::default();
         let c = Tuple::color(1.0, 1.0, 1.0);
         assert_eq!(c, m.color);
         assert_eq!(0.1, m.ambient);
@@ -89,7 +90,7 @@ mod tests {
     }
     #[test]
     fn lightning_with_the_eye_between_the_light_and_the_surface() {
-        let m = Material::new();
+        let m = Material::default();
         let position = Tuple::point(0.0, 0.0, 0.0);
         let eyev = Tuple::vector(0.0, 0.0, -1.0);
         let normalv = Tuple::vector(0.0, 0.0, -1.0);
@@ -101,9 +102,9 @@ mod tests {
     }
     #[test]
     fn lightning_with_the_eye_between_the_light_and_the_surface_eye_offset_45_degrees() {
-        let m = Material::new();
+        let m = Material::default();
         let position = Tuple::point(0.0, 0.0, 0.0);
-        let eyev = Tuple::vector(0.0, 2_f64.sqrt() / 2.0, -2_f64.sqrt() / 2.0);
+        let eyev = Tuple::vector(0.0, 2_f64.sqrt() / 2.0, -(2_f64.sqrt()) / 2.0);
         let normalv = Tuple::vector(0.0, 0.0, -1.0);
         let light = PointLight::new(Tuple::point(0.0, 0.0, -10.0), Tuple::color(1.0, 1.0, 1.0));
         let alight = Arc::new(light);
@@ -113,7 +114,7 @@ mod tests {
     }
     #[test]
     fn lightning_with_the_eye_opposite_surface_light_offset_45_degrees() {
-        let m = Material::new();
+        let m = Material::default();
         let position = Tuple::point(0.0, 0.0, 0.0);
         let eyev = Tuple::vector(0.0, 0.0, -1.0);
         let normalv = Tuple::vector(0.0, 0.0, -1.0);
@@ -125,9 +126,9 @@ mod tests {
     }
     #[test]
     fn lightning_with_the_eye_in_the_path_of_the_reflection_vector() {
-        let m = Material::new();
+        let m = Material::default();
         let position = Tuple::point(0.0, 0.0, 0.0);
-        let eyev = Tuple::vector(0.0, -2_f64.sqrt() / 2.0, -2_f64.sqrt() / 2.0);
+        let eyev = Tuple::vector(0.0, -(2_f64.sqrt()) / 2.0, -(2_f64.sqrt()) / 2.0);
         let normalv = Tuple::vector(0.0, 0.0, -1.0);
         let light = PointLight::new(Tuple::point(0.0, 10.0, -10.0), Tuple::color(1.0, 1.0, 1.0));
         let alight = Arc::new(light);
@@ -137,7 +138,7 @@ mod tests {
     }
     #[test]
     fn lightning_with_the_light_behind_the_surface() {
-        let m = Material::new();
+        let m = Material::default();
         let position = Tuple::point(0.0, 0.0, 0.0);
         let eyev = Tuple::vector(0.0, 0.0, -1.0);
         let normalv = Tuple::vector(0.0, 0.0, -1.0);

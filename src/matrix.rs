@@ -49,7 +49,7 @@ impl Matrix {
             self.elements[0] * self.elements[3] - self.elements[1] * self.elements[2]
         } else {
             for col in 0..self.dimensions {
-                det = det + self.at(0, col) * self.cofactor(0, col);
+                det += self.at(0, col) * self.cofactor(0, col);
             }
             det
         }
@@ -154,6 +154,7 @@ impl Mul<Tuple> for Matrix {
     }
 }
 #[cfg(test)]
+#[allow(clippy::float_cmp)]
 
 mod tests {
     use super::*;

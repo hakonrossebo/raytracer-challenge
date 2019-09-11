@@ -86,10 +86,10 @@ fn perform_render(canvas_width: u32, canvas_height: u32, s: &std::sync::mpsc::Se
     let ray_origin = Tuple::point(0.0, 0.0, -5.0);
     let wall_z = 10.0;
     let wall_size = 7.0;
-    let pixel_size = wall_size / canvas_width as f64;
+    let pixel_size = wall_size / f64::from(canvas_width);
     let half = wall_size / 2.0;
-    let mut shape = Sphere::new();
-    let mut mat = Material::new();
+    let mut shape = Sphere::default();
+    let mut mat = Material::default();
     mat.color = Tuple::color(1.0, 0.2, 1.0);
     shape.set_material(mat);
     let light_position = Tuple::point(-10.0, 10.0, -10.0);
@@ -102,11 +102,11 @@ fn perform_render(canvas_width: u32, canvas_height: u32, s: &std::sync::mpsc::Se
     let mut color: Tuple;
     println!("Starting circle...");
     for y in 0..canvas_height {
-        let world_y = half - pixel_size * y as f64;
+        let world_y = half - pixel_size * f64::from(y);
         println!("Processing line...{} of {}", y, canvas_height);
         let mut pixels: Vec<Pixel> = Vec::new();
         for x in 0..canvas_width {
-            let world_x = -half + pixel_size * x as f64;
+            let world_x = -half + pixel_size * f64::from(x);
             let position = Tuple::point(world_x, world_y, wall_z);
             let r = Ray::new(ray_origin, (position - ray_origin).normalize());
             let xs = shape.intersect(r.clone());
@@ -118,11 +118,7 @@ fn perform_render(canvas_width: u32, canvas_height: u32, s: &std::sync::mpsc::Se
                 let alight = Arc::new(light.clone());
                 color = hit.object.material.lighting(&alight, point, eye, normal);
                 canvas.write_pixel(x as usize, y as usize, color);
-                pixels.push(Pixel {
-                    x: x,
-                    y: y,
-                    c: color,
-                });
+                pixels.push(Pixel { x, y, c: color });
             }
         }
         s.send(pixels).unwrap();

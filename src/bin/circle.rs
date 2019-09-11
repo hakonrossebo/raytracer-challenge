@@ -1,8 +1,8 @@
 extern crate chrono;
 extern crate raytracer_challenge;
 
-use raytracer_challenge::file::*;
 use raytracer_challenge::canvas::Canvas;
+use raytracer_challenge::file::*;
 use raytracer_challenge::intersections::hit;
 use raytracer_challenge::rays::Ray;
 use raytracer_challenge::spheres::Sphere;
@@ -17,7 +17,7 @@ fn main() {
   let wall_size = 7.0;
   let pixel_size = wall_size / canvas_width as f64;
   let half = wall_size / 2.0;
-  let mut shape = Sphere::new();
+  let mut shape = Sphere::default();
   // shape.set_transform(scaling(0.5, 1.0, 1.0));
   shape.set_transform(shearing(1.0, 0.0, 0.0, 0.0, 0.0, 0.0) * scaling(0.5, 1.0, 1.0));
   let mut canvas = Canvas::new(canvas_width, canvas_height);
@@ -31,7 +31,8 @@ fn main() {
       let r = Ray::new(ray_origin, (position - ray_origin).normalize());
       let xs = shape.intersect(r);
 
-      if let Some(_) = hit(xs) {
+      // if let Some(_) = hit(xs) {
+      if hit(xs).is_some() {
         canvas.write_pixel(x, canvas_height - y, color);
       }
     }

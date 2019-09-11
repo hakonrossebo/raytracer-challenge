@@ -17,7 +17,7 @@ fn main() {
 
   println!("Starting clock...");
   for time in 0..12 {
-    let r = transformations::rotation_y(time as f64 * PI / 6.0);
+    let r = transformations::rotation_y(f64::from(time) * PI / 6.0);
     let Tuple(timepos_x, _, timepos_y, _) = r * twelve;
 
     println!("Rotating clock...");

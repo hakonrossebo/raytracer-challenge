@@ -5,7 +5,7 @@ use chrono::DateTime;
 use chrono::Utc;
 
 // Name is beeing appended date and time to avoid naming collisions
-pub fn write_ppm_to_file(ppm: &String, name: &str) {
+pub fn write_ppm_to_file(ppm: &str, name: &str) {
   let filename = create_os_path(name, "ppm");
   let mut file = File::create(filename.clone()).expect("Create file failed.");
   file
@@ -15,7 +15,7 @@ pub fn write_ppm_to_file(ppm: &String, name: &str) {
 }
 
 pub fn create_os_path(name: &str, suffix: &str) -> String {
-  let mut filename: String;
+  let filename: String;
   let date: DateTime<Utc> = Utc::now();
   let dateformatted = date.format("%Y-%m-%d_%H_%M_%S").to_string();
   if cfg!(windows) {

@@ -26,12 +26,13 @@ pub fn hit(xs: Vec<Intersection>) -> Option<Intersection> {
 }
 
 #[cfg(test)]
+#[allow(clippy::float_cmp)]
 
 mod tests {
     use super::*;
     #[test]
     fn an_intersection_encapsulates_t_and_an_object() {
-        let s = Sphere::new();
+        let s = Sphere::default();
         let i = Intersection::new(3.5, &s);
         assert_eq!(3.5, i.t);
         assert_eq!(&s, i.object);
@@ -39,7 +40,7 @@ mod tests {
 
     #[test]
     fn aggregating_intersections() {
-        let s = Sphere::new();
+        let s = Sphere::default();
         let i1 = Intersection::new(1.0, &s);
         let i2 = Intersection::new(2.0, &s);
         let xs = intersections(vec![i1.clone(), i2.clone()]);
@@ -49,7 +50,7 @@ mod tests {
 
     #[test]
     fn the_hit_when_all_intersections_have_positive_t() {
-        let s = Sphere::new();
+        let s = Sphere::default();
         let i1 = Intersection::new(1.0, &s);
         let i2 = Intersection::new(2.0, &s);
         let xs = intersections(vec![i2.clone(), i1.clone()]);
@@ -58,7 +59,7 @@ mod tests {
     }
     #[test]
     fn the_hit_when_some_intersections_have_negative_t() {
-        let s = Sphere::new();
+        let s = Sphere::default();
         let i1 = Intersection::new(-1.0, &s);
         let i2 = Intersection::new(1.0, &s);
         let xs = intersections(vec![i2.clone(), i1.clone()]);
@@ -67,7 +68,7 @@ mod tests {
     }
     #[test]
     fn the_hit_when_all_intersections_have_negative_t() {
-        let s = Sphere::new();
+        let s = Sphere::default();
         let i1 = Intersection::new(-2.0, &s);
         let i2 = Intersection::new(-1.0, &s);
         let xs = intersections(vec![i2.clone(), i1.clone()]);
@@ -76,7 +77,7 @@ mod tests {
     }
     #[test]
     fn the_hit_is_always_the_lowest_nonnegative_intersection() {
-        let s = Sphere::new();
+        let s = Sphere::default();
         let i1 = Intersection::new(5.0, &s);
         let i2 = Intersection::new(7.0, &s);
         let i3 = Intersection::new(-3.0, &s);

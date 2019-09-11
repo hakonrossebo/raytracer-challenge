@@ -61,7 +61,7 @@ impl Canvas {
             s
         }
         // generating the ppm info from canvas
-        let mut ppm = String::from(header);
+        let mut ppm = header;
         for y in 0..self.height {
             let mut linecolors: Vec<i32> = Vec::new();
             for x in 0..self.width {
@@ -130,7 +130,7 @@ mod tests {
             .take(4)
             .collect::<Vec<&str>>()
             .join("\n");
-        let expected = format!("255 0 0 0 0 0 0 0 0 0 0 0 0 0 0\n0 0 0 0 0 0 0 128 0 0 0 0 0 0 0\n0 0 0 0 0 0 0 0 0 0 0 0 0 0 255\n");
+        let expected = "255 0 0 0 0 0 0 0 0 0 0 0 0 0 0\n0 0 0 0 0 0 0 128 0 0 0 0 0 0 0\n0 0 0 0 0 0 0 0 0 0 0 0 0 0 255\n".to_string();
         assert_eq!(expected, ppm);
     }
     #[test]
@@ -149,7 +149,7 @@ mod tests {
             .take(5)
             .collect::<Vec<&str>>()
             .join("\n");
-        let expected = format!("255 204 153 255 204 153 255 204 153 255 204 153 255 204 153 255 204\n153 255 204 153 255 204 153 255 204 153 255 204 153\n255 204 153 255 204 153 255 204 153 255 204 153 255 204 153 255 204\n153 255 204 153 255 204 153 255 204 153 255 204 153\n");
+        let expected = "255 204 153 255 204 153 255 204 153 255 204 153 255 204 153 255 204\n153 255 204 153 255 204 153 255 204 153 255 204 153\n255 204 153 255 204 153 255 204 153 255 204 153 255 204 153 255 204\n153 255 204 153 255 204 153 255 204 153 255 204 153\n".to_string();
         assert_eq!(expected, ppm);
     }
     #[test]
