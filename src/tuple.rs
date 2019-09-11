@@ -13,17 +13,17 @@ impl Tuple {
     pub fn color(r: f64, g: f64, b: f64) -> Tuple {
         Tuple(r, g, b, 0.0)
     }
-    pub fn magnitude(self) -> f64 {
+    pub fn magnitude(&self) -> f64 {
         (self.0 * self.0 + self.1 * self.1 + self.2 * self.2 + self.3 * self.3).sqrt()
     }
-    pub fn normalize(self) -> Tuple {
+    pub fn normalize(&self) -> Tuple {
         let m = self.magnitude();
         Tuple(self.0 / m, self.1 / m, self.2 / m, self.3 / m)
     }
-    pub fn dot(self, other: Tuple) -> f64 {
+    pub fn dot(&self, other: Tuple) -> f64 {
         self.0 * other.0 + self.1 * other.1 + self.2 * other.2 + self.3 * other.3
     }
-    pub fn cross(self, other: Tuple) -> Tuple {
+    pub fn cross(&self, other: Tuple) -> Tuple {
         Tuple::vector(
             self.1 * other.2 - self.2 * other.1,
             self.2 * other.0 - self.0 * other.2,
@@ -33,8 +33,8 @@ impl Tuple {
     pub fn set_w(&mut self, new_w: f64) {
         self.3 = new_w;
     }
-    pub fn reflect(self, normal: Tuple) -> Tuple {
-        self - normal * 2.0 * self.dot(normal)
+    pub fn reflect(&self, normal: Tuple) -> Tuple {
+        *self - normal * 2.0 * self.dot(normal)
     }
 }
 

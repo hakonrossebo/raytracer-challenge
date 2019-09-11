@@ -86,7 +86,11 @@ fn convert_and_clamp(colval: f64) -> u8 {
     res as u8
 }
 
-fn perform_render(canvas_width: u32, canvas_height: u32, s: &std::sync::mpsc::Sender<Vec<Pixel>>) {
+fn perform_render(
+    canvas_width: u32,
+    canvas_height: u32,
+    sender: &std::sync::mpsc::Sender<Vec<Pixel>>,
+) {
     let num_logical_cpus = num_cpus::get();
     let num_physical_cpus = num_cpus::get_physical();
     println!("Logical CPUs: {}", num_logical_cpus);
@@ -113,9 +117,7 @@ fn perform_render(canvas_width: u32, canvas_height: u32, s: &std::sync::mpsc::Se
     // shape.set_transform(shearing(1.0, 0.0, 0.0, 0.0, 0.0, 0.0) * scaling(0.5, 1.0, 1.0));
     println!("Starting circle...");
     for y in 0..canvas_height {
-        let s = s.clone();
-        // let shape = shape.clone();
-        // let shape_clone:Arc<&Sphere> = Arc::clone(&shape);
+        let sender = sender.clone();
         let shape_clone = Arc::clone(&ashape);
         let light_clone = Arc::clone(&light);
 
@@ -144,7 +146,7 @@ fn perform_render(canvas_width: u32, canvas_height: u32, s: &std::sync::mpsc::Se
                     });
                 }
             }
-            s.send(pixels).unwrap();
+            sender.send(pixels).unwrap();
         });
     }
     println!("Finished.");
